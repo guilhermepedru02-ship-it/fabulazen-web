@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#0f0f1a"/>
+    </linearGradient>
+    <linearGradient id="book" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700"/>
+      <stop offset="100%" style="stop-color:#FFA500"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Background -->
+  <rect width="192" height="192" rx="40" fill="url(#bg)"/>
+  <!-- Book -->
+  <g transform="translate(96,105)" filter="url(#glow)">
+    <!-- Left page -->
+    <path d="M-8,-20 L-8,25 L-50,20 L-50,-15 Z" fill="#FFF8DC" stroke="url(#book)" stroke-width="2"/>
+    <!-- Right page -->
+    <path d="M8,-20 L8,25 L50,20 L50,-15 Z" fill="#FFFACD" stroke="url(#book)" stroke-width="2"/>
+    <!-- Spine -->
+    <path d="M-8,-20 L0,-25 L8,-20" fill="none" stroke="url(#book)" stroke-width="2.5"/>
+    <line x1="0" y1="-25" x2="0" y2="28" stroke="url(#book)" stroke-width="1.5"/>
+  </g>
+  <!-- Stars -->
+  <g fill="#FFD700" opacity="0.9">
+    <circle cx="60" cy="45" r="3"/>
+    <circle cx="135" cy="38" r="2.5"/>
+    <circle cx="96" cy="30" r="4"/>
+    <circle cx="48" cy="65" r="2"/>
+    <circle cx="145" cy="60" r="2.5"/>
+    <circle cx="75" cy="35" r="2"/>
+    <circle cx="120" cy="50" r="3"/>
+  </g>
+  <!-- Sparkle lines -->
+  <g stroke="#FFD700" stroke-width="1.5" opacity="0.7" stroke-linecap="round">
+    <line x1="96" y1="55" x2="96" y2="45"/>
+    <line x1="80" y1="60" x2="72" y2="50"/>
+    <line x1="112" y1="60" x2="120" y2="50"/>
+  </g>
+</svg>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <script>
+        window.tempErrorHandler = function(msg, url, line, col, error) {
+            const errDiv = document.createElement('div');
+            errDiv.style.background = '#AA0000';
+            errDiv.style.color = '#FFFFFF';
+            errDiv.style.padding = '20px';
+            errDiv.style.position = 'fixed';
+            errDiv.style.top = '0';
+            errDiv.style.left = '0';
+            errDiv.style.width = '100%';
+            errDiv.style.zIndex = '999999';
+            errDiv.style.fontFamily = 'monospace';
+            errDiv.innerHTML = `<h3>⚠️ Erro Crítico Local</h3>
+                                <p><strong>Msg:</strong> ${msg}</p>
+                                <p><strong>Onde:</strong> ${url}:${line}:${col}</p>
+                                <p style="font-size:0.8em; opacity:0.8;">Tente acessar em aba anônima para ignorar cache de PWA.</p>
+                                <button onclick="this.parentElement.remove()" style="margin-top:10px; padding:5px 10px; color:black;">X Fechar</button>`;
+            document.body.prepend(errDiv);
+        };
+        window.addEventListener('error', function(event) {
+            window.tempErrorHandler(event.message, event.filename, event.lineno, event.colno, event.error);
+        });
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fabula Zen - Estante de E-books</title>
+    <meta name="description" content="Plataforma de e-books infantis interativos com design Zen.">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f0f1a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/avatar.css">
+    <link rel="stylesheet" href="css/gamification.css">
+    <link rel="stylesheet" href="css/build-scene.css">
+    <link rel="stylesheet" href="css/selecao-livro.css">
+    <link rel="stylesheet" href="css/games-hub.css">
+    <link rel="stylesheet" href="css/quiz.css">
+    <link rel="stylesheet" href="css/memory-game.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/ecommerce.css">
+
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✨</text></svg>">
+    
+    <!-- Design System: Tailwind + Fonts -->
+    <link rel="stylesheet" href="css/tailwind-output.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Removido override de cor que causava invisibilidade em componentes escuros */
+        .hero-title,
+        .hero-description,
+        .category-title,
+        .card-title {
+            color: #000000 !important;
+        }
+
+        .hero-description {
+            color: #222222 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="app-header">
+        <button id="btn-global-menu" class="header-global-menu-btn fz-magic-star-btn" aria-label="Abrir Menu Global">
+            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="rgba(255, 215, 0, 0.8)" stroke="#FFD700" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 8px #FFD700);">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+        </button>
+        <h1 class="header-title">Fabula-Zen</h1>
+        <div class="header-spacer"></div>
+    </header>
+
+    <div id="app-root">
+        <!-- O conteúdo será injetado pelo app.js -->
+        <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+            <p style="font-family: 'Inter', sans-serif; color: #000000; opacity: 0.5;">Carregando seu mundo mágico...
+            </p>
+        </div>
+    </div>
+
+    <!-- Scripts Base -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.2.4/pixi.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.10.2/lottie.min.js"></script>
+    <script src="components/audioService.js"></script>
+    <script src="components/BgmService.js"></script>
+    <script src="assets/avatares/avatarData.js"></script>
+    <script src="components/GamificationEngine.js"></script>
+    <script src="components/GamificationUI.js"></script>
+    <script src="components/AvatarSystem.js"></script>
+    <script src="components/BuildSceneGame.js"></script>
+    <script src="components/LayoutEngine.js"></script>
+    <script src="components/MemoryGame.js"></script>
+    <script type="module" src="scripts/app.js?v=5.8"></script>
+</body>
+
+
+</html>

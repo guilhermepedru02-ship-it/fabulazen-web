@@ -1,0 +1,357 @@
+/* 
+ * Memory Game - Epic RPG Parchment Style 
+ */
+
+.memory-container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: radial-gradient(circle at center, #2b1b3d 0%, #0f0f1a 100%);
+    color: #f8f0e0;
+    font-family: 'Cinzel', serif;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+}
+
+/* ==========================================================================
+   Setup Screen (Parchment Menu)
+   ========================================================================== */
+.memory-setup {
+    background: #fdf5e6;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(139, 69, 19, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 80% 80%, rgba(139, 69, 19, 0.05) 0%, transparent 20%);
+    border: 4px solid #8b5a2b;
+    border-radius: 10px;
+    box-shadow: 
+        inset 0 0 40px rgba(139, 69, 19, 0.2),
+        0 20px 50px rgba(0,0,0,0.8);
+    padding: 40px 50px;
+    text-align: center;
+    color: #4a2e15;
+    max-width: 600px;
+    margin: auto;
+    position: relative;
+}
+
+/* Torn edges effect using box-shadows */
+.memory-setup::before {
+    content: '';
+    position: absolute;
+    top: 5px; left: 5px; right: 5px; bottom: 5px;
+    border: 1px solid rgba(139, 69, 19, 0.3);
+    pointer-events: none;
+}
+
+.memory-setup h2 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+}
+
+.memory-setup p {
+    font-family: 'Nunito', sans-serif;
+    font-size: 1.1rem;
+    margin-bottom: 30px;
+    color: #5c3a21;
+}
+
+.setup-group {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.setup-group label {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+    border-bottom: 1px solid rgba(139, 69, 19, 0.2);
+    padding-bottom: 5px;
+}
+
+.setup-options {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.setup-btn {
+    flex: 1;
+    background: linear-gradient(to bottom, #f4e8d1, #e3cfa1);
+    border: 2px solid #a67c52;
+    padding: 12px 20px;
+    border-radius: 5px;
+    font-family: 'Cinzel', serif;
+    font-weight: bold;
+    color: #4a2e15;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.setup-btn:hover {
+    background: linear-gradient(to bottom, #fdf5e6, #ebd7ad);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.setup-btn.active {
+    background: linear-gradient(to bottom, #8a2b2b, #5c1818);
+    color: #f8f0e0;
+    border-color: #3a0d0d;
+    box-shadow: inset 0 3px 6px rgba(0,0,0,0.3);
+}
+
+.btn-start-game {
+    display: inline-block;
+    width: 100%;
+    background: linear-gradient(to bottom, #d4af37, #aa8014);
+    border: 2px solid #fff;
+    color: #fff;
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    padding: 15px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+    box-shadow: 0 5px 15px rgba(212, 175, 55, 0.4);
+    margin-top: 20px;
+    transition: all 0.3s;
+}
+
+.btn-start-game:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.6);
+}
+
+/* ==========================================================================
+   Game Board
+   ========================================================================== */
+.memory-game-area {
+    width: 100%;
+    max-width: 900px;
+    display: none; /* Hidden until started */
+    flex-direction: column;
+    gap: 20px;
+}
+
+.memory-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0,0,0,0.5);
+    padding: 15px 25px;
+    border-radius: 10px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    backdrop-filter: blur(5px);
+}
+
+.player-stats {
+    display: flex;
+    gap: 30px;
+}
+
+.player-score {
+    font-size: 1.2rem;
+    color: #ccc;
+    transition: color 0.3s, transform 0.3s;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.player-score.active-turn {
+    color: #FFD700;
+    font-weight: bold;
+    transform: scale(1.1);
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.5);
+}
+
+.timer-container {
+    flex: 1;
+    margin: 0 30px;
+    height: 10px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+    display: none; /* Only for 2P mode */
+}
+
+.timer-bar {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #ff4e50, #f9d423);
+    transform-origin: left;
+    transition: transform 0.1s linear;
+}
+
+.btn-quit {
+    background: rgba(255, 0, 0, 0.2);
+    border: 1px solid rgba(255,0,0,0.5);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+}
+
+/* ==========================================================================
+   Cards Grid
+   ========================================================================== */
+.memory-grid {
+    display: grid;
+    gap: 15px;
+    justify-content: center;
+    perspective: 1000px;
+}
+
+/* Grid sizes set by JS based on difficulty, but we give a default */
+.memory-grid.grid-16 { grid-template-columns: repeat(4, 1fr); }
+.memory-grid.grid-24 { grid-template-columns: repeat(6, 1fr); }
+.memory-grid.grid-36 { grid-template-columns: repeat(6, 1fr); }
+
+.memory-card {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    cursor: pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+}
+
+@media (min-width: 768px) {
+    .memory-card {
+        width: 120px;
+        height: 120px;
+    }
+}
+
+.memory-card.flipped {
+    transform: rotateY(180deg);
+}
+
+.memory-card.matched {
+    transform: rotateY(180deg) scale(0.95);
+    filter: brightness(0.7) contrast(1.2);
+    pointer-events: none;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.8);
+}
+
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid #5c3a21;
+}
+
+.card-back {
+    background: #2a1616;
+    background-image: 
+        repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 4px),
+        radial-gradient(circle at center, #4a1f1f 0%, #1a0a0a 100%);
+    color: #d4af37;
+    font-size: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+}
+
+/* O "verso" da carta no HTML é a frente da imagem */
+.card-front {
+    transform: rotateY(180deg);
+    background: #f8f0e0;
+}
+
+.card-front img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.3s ease;
+}
+
+/* Fallback para quando a imagem falha ao carregar */
+.card-front.img-error img {
+    opacity: 0;
+    display: none;
+}
+
+.card-front.img-error::after {
+    content: '✨';
+    font-size: 2.5rem;
+    color: #d4af37;
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
+    animation: pulse-zen 2s infinite ease-in-out;
+}
+
+@keyframes pulse-zen {
+    0%, 100% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.1); opacity: 1; }
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 600px) {
+    .memory-grid.grid-16 { grid-template-columns: repeat(4, 1fr); }
+    .memory-grid.grid-24 { grid-template-columns: repeat(4, 1fr); }
+    .memory-grid.grid-36 { grid-template-columns: repeat(6, 1fr); }
+    
+    .memory-card {
+        width: 75px;
+        height: 75px;
+    }
+    .memory-setup {
+        padding: 20px;
+    }
+    .player-stats {
+        flex-direction: column;
+        gap: 5px;
+    }
+    .timer-container {
+        margin: 10px 0;
+    }
+    .memory-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* ==========================================================================
+   Loading Bar (Pre-validation)
+   ========================================================================== */
+.memory-loading-bar {
+    width: 200px;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.memory-loading-fill {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #d4af37, #ffd700, #d4af37);
+    background-size: 200% 100%;
+    animation: memory-loading-shimmer 1.5s ease-in-out infinite;
+    border-radius: 3px;
+}
+
+@keyframes memory-loading-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}

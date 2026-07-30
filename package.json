@@ -1,0 +1,12 @@
+{
+  "name": "fabula-zen-web",
+  "version": "1.0.0",
+  "description": "Frontend App do Fabula Zen",
+  "scripts": {
+    "build:css": "tailwindcss -i ./css/tailwind-input.css -o ./css/tailwind-output.css --minify",
+    "watch:css": "tailwindcss -i ./css/tailwind-input.css -o ./css/tailwind-output.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}

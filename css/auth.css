@@ -1,0 +1,155 @@
+/* 
+   Auth UI - Estilo Zen e Mágico
+*/
+
+.auth-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, #1a1a2e 0%, #0f0f1a 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+}
+
+.auth-overlay.visible {
+    opacity: 1;
+}
+
+/* Efeitos de partículas mágicas no fundo (opcional, via pseudo-elementos ou imagens) */
+.auth-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='1' fill='rgba(255,255,255,0.1)'/%3E%3C/svg%3E");
+    opacity: 0.5;
+    pointer-events: none;
+    animation: drift 60s linear infinite;
+}
+
+@keyframes drift {
+    from { background-position: 0 0; }
+    to { background-position: 1000px 1000px; }
+}
+
+.auth-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 40px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: translateY(20px);
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-overlay.visible .auth-card {
+    transform: translateY(0);
+}
+
+.auth-logo {
+    font-size: 48px;
+    margin-bottom: 10px;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+}
+
+.auth-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+}
+
+.auth-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 32px;
+    line-height: 1.5;
+}
+
+/* Botão do Google */
+.auth-google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    background: #ffffff;
+    color: #1f2937;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.auth-google-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    background: #f8fafc;
+}
+
+.auth-google-btn:active {
+    transform: translateY(0);
+}
+
+.auth-google-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.auth-footer {
+    margin-top: 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.auth-footer a {
+    color: rgba(255, 255, 255, 0.6);
+    text-decoration: none;
+}
+
+.auth-footer a:hover {
+    color: #ffffff;
+}
+
+/* Spinner de Loading */
+.auth-loading {
+    display: none;
+    margin-top: 20px;
+    color: rgba(255, 255, 255, 0.8);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+}
+
+.auth-loading.active {
+    display: block;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+}
