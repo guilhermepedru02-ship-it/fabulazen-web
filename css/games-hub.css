@@ -17,6 +17,8 @@
   --gh-cyan-dark: #1a9aaa;
   --gh-purple: #9b72cf;
   --gh-green: #5cb85c;
+  --gh-blue: #3b82f6;
+  --gh-blue-dark: #1d4ed8;
   --gh-text: #2a2218;
   --gh-text-soft: #6b5f4a;
   --gh-card-bg: #ffffff;
@@ -226,6 +228,7 @@
 .games-hub-container .game-card.cyan-theme { border-color: var(--gh-cyan); }
 .games-hub-container .game-card.purple-theme { border-color: var(--gh-purple); }
 .games-hub-container .game-card.green-theme { border-color: var(--gh-green); }
+.games-hub-container .game-card.blue-theme { border-color: var(--gh-blue); }
 
 /* card illustration area */
 .games-hub-container .card-art {
@@ -241,6 +244,7 @@
 .games-hub-container .card-art-cyan   { background: linear-gradient(145deg, #002830 0%, #005060 50%, #003040 100%); }
 .games-hub-container .card-art-purple { background: linear-gradient(145deg, #1a0030 0%, #3a0060 50%, #220040 100%); }
 .games-hub-container .card-art-green  { background: linear-gradient(145deg, #001a00 0%, #003a00 50%, #002200 100%); }
+.games-hub-container .card-art-blue   { background: linear-gradient(145deg, #001a33 0%, #003366 50%, #001122 100%); }
 
 /* glowing ring behind icon */
 .games-hub-container .card-art-glow {
@@ -255,6 +259,7 @@
 .games-hub-container .cyan-glow-el   { background: radial-gradient(circle, #40e0ff, transparent 70%); }
 .games-hub-container .purple-glow-el { background: radial-gradient(circle, #cc88ff, transparent 70%); }
 .games-hub-container .green-glow-el  { background: radial-gradient(circle, #88ff88, transparent 70%); }
+.games-hub-container .blue-glow-el   { background: radial-gradient(circle, #88c0ff, transparent 70%); }
 
 @keyframes fzh-glow-breathe {
   0%, 100% { transform: scale(1); opacity: 0.18; }
@@ -320,6 +325,7 @@
 .games-hub-container .tag-cyan   { background: #d0f4f8; color: #006070; }
 .games-hub-container .tag-purple { background: #f0d0ff; color: #600090; }
 .games-hub-container .tag-green  { background: #d0f0d0; color: #005500; }
+.games-hub-container .tag-blue   { background: #d0e8ff; color: #003388; }
 
 .games-hub-container .card-title {
   font-family: 'Fredoka One', cursive;
@@ -411,6 +417,16 @@
 }
 .games-hub-container .btn-green:hover {
   box-shadow: 0 6px 24px rgba(92,184,92,0.6);
+  transform: translateY(-2px);
+}
+
+.games-hub-container .btn-blue {
+  background: linear-gradient(135deg, var(--gh-blue-dark) 0%, var(--gh-blue) 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(59,130,246,0.4);
+}
+.games-hub-container .btn-blue:hover {
+  box-shadow: 0 6px 24px rgba(59,130,246,0.6);
   transform: translateY(-2px);
 }
 
@@ -554,7 +570,8 @@
 .games-hub-container .game-card:nth-child(1) { animation: fzh-fadeUp 0.5s 0.18s ease both; }
 .games-hub-container .game-card:nth-child(2) { animation: fzh-fadeUp 0.5s 0.26s ease both; }
 .games-hub-container .game-card:nth-child(3) { animation: fzh-fadeUp 0.5s 0.34s ease both; }
-.games-hub-container .back-area    { animation: fzh-fadeUp 0.5s 0.42s ease both; }
+.games-hub-container .game-card:nth-child(4) { animation: fzh-fadeUp 0.5s 0.42s ease both; }
+.games-hub-container .back-area    { animation: fzh-fadeUp 0.5s 0.50s ease both; }
 
 @media (max-width: 640px) {
   .games-hub-container .games-grid { grid-template-columns: 1fr; }

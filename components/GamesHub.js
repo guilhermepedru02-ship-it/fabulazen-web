@@ -104,7 +104,7 @@ export function GamesHub(books, onNavigate, onStartGame) {
 
     <!-- Card 4: Memória Mágica (NOVO) -->
     <div class="game-card blue-theme" id="btn-memoria-magica" tabindex="0">
-      <div class="card-art card-art-blue" style="background: linear-gradient(135deg, #8a2b2b, #6a0dad);">
+      <div class="card-art card-art-blue">
         <div class="card-art-glow blue-glow-el"></div>
         <div class="card-xp">+40 XP</div>
         <div class="card-diff">

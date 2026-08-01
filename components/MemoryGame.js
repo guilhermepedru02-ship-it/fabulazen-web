@@ -300,10 +300,28 @@ window.MemoryGame = (function() {
                 }
             }
 
-            // Pré-carrega TODAS as candidatas em paralelo para validar
-            console.log(`[MemoryGame] Validando ${candidates.length} imagens candidatas...`);
-            availableImages = await validateImages(candidates);
-            console.log(`[MemoryGame] ${availableImages.length} imagens validadas com sucesso.`);
+            // Embaralha as candidatas ANTES de validar para evitar viés do primeiro livro
+            for (let i = candidates.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+            }
+
+            // Pega apenas uma fatia para não sobrecarregar a rede com centenas de conexões
+            let candidatesToValidate = candidates.slice(0, Math.max(pairsNeeded * 3, 40));
+
+            console.log(`[MemoryGame] Validando ${candidatesToValidate.length} imagens candidatas (reduzido para estabilidade)...`);
+            let validated = await validateImages(candidatesToValidate);
+            
+            // Remove possíveis duplicatas no array de validação
+            validated = [...new Set(validated)];
+            
+            // Força a quantidade exata para evitar qualquer repetição na matriz de pares
+            if (validated.length > pairsNeeded) {
+                validated = validated.slice(0, pairsNeeded);
+            }
+
+            console.log(`[MemoryGame] ${validated.length} imagens validadas com sucesso.`);
+            availableImages = validated;
 
             // Atualiza o cache para futuras partidas
             _validatedImageCache = [...availableImages];
@@ -344,22 +362,11 @@ window.MemoryGame = (function() {
     }
 
     /**
-     * Motor de Resiliência de Imagens — Substituição Inteligente.
-     * Como as imagens são pré-validadas, erros aqui são raros (ex: rede caiu).
-     * Em vez de mostrar fallback visual, substitui pela próxima imagem validada do cache.
+     * Motor de Resiliência de Imagens — Falha de Rede no Tabuleiro.
+     * Como as imagens são pré-validadas, erros aqui são extremamente raros.
+     * Não substituímos 'img.src' para não quebrar a lógica de pareamento ('dataset.url').
      */
     function handleImageError(img) {
-        // Tenta substituir pela próxima imagem validada do cache
-        if (_validatedImageCache.length > 0) {
-            const currentSrc = img.src;
-            const replacement = _validatedImageCache.find(url => url !== currentSrc);
-            if (replacement && !img.dataset.replaced) {
-                img.dataset.replaced = 'true';
-                img.src = replacement;
-                return;
-            }
-        }
-
         // Fallback visual final (praticamente impossível com pré-validação)
         img.parentElement.classList.add('img-error');
         img.onerror = null;
