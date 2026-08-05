@@ -276,6 +276,12 @@ window.MemoryGame = (function() {
     /**
      * Prepara as cartas: extrai, valida e monta o deck.
      * Usa pré-carregamento para garantir zero fallbacks.
+     *
+     * REGRA FUNDAMENTAL: cada par do tabuleiro DEVE ter uma imagem ÚNICA.
+     * Se não houver imagens únicas suficientes para cobrir todos os pares,
+     * o jogo recusa montar o tabuleiro em vez de criar pares fantasma
+     * (cartas visualmente idênticas mas com IDs distintos, impossíveis
+     * de combinar — causa raiz do bug do tabuleiro de 36 peças).
      */
     async function buildCards() {
         const pairsNeeded = difficulty / 2;
@@ -306,25 +312,41 @@ window.MemoryGame = (function() {
                 [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
             }
 
-            // Pega apenas uma fatia para não sobrecarregar a rede com centenas de conexões
-            let candidatesToValidate = candidates.slice(0, Math.max(pairsNeeded * 3, 40));
+            // Valida uma fatia generosa para garantir cobertura no modo difícil (36 peças)
+            const sliceSize = Math.min(candidates.length, Math.max(pairsNeeded * 5, 80));
+            let candidatesToValidate = candidates.slice(0, sliceSize);
 
-            console.log(`[MemoryGame] Validando ${candidatesToValidate.length} imagens candidatas (reduzido para estabilidade)...`);
+            console.log(`[MemoryGame] Validando ${candidatesToValidate.length} imagens candidatas para ${pairsNeeded} pares...`);
             let validated = await validateImages(candidatesToValidate);
             
             // Remove possíveis duplicatas no array de validação
             validated = [...new Set(validated)];
             
-            // Força a quantidade exata para evitar qualquer repetição na matriz de pares
-            if (validated.length > pairsNeeded) {
-                validated = validated.slice(0, pairsNeeded);
-            }
-
-            console.log(`[MemoryGame] ${validated.length} imagens validadas com sucesso.`);
+            console.log(`[MemoryGame] ${validated.length} imagens únicas validadas com sucesso (precisa de ${pairsNeeded}).`);
             availableImages = validated;
 
             // Atualiza o cache para futuras partidas
             _validatedImageCache = [...availableImages];
+        }
+
+        // ── Proteção contra tabuleiro impossível ──────────────────────────
+        // Se não houver imagens únicas suficientes, NÃO montar um tabuleiro
+        // quebrado com imagens recicladas (causa raiz do bug #36peças).
+        if (availableImages.length < pairsNeeded) {
+            console.warn(
+                `[MemoryGame] ATENÇÃO: apenas ${availableImages.length} imagens únicas ` +
+                `disponíveis, mas ${pairsNeeded} são necessárias para ${difficulty} cartas. ` +
+                `Reduzindo dificuldade automaticamente.`
+            );
+            // Reduz a dificuldade para o maior tabuleiro viável
+            const viablePairs = availableImages.length;
+            if (viablePairs >= 12) {
+                difficulty = 24;
+            } else {
+                difficulty = 16;
+            }
+            const adjustedPairs = difficulty / 2;
+            console.log(`[MemoryGame] Dificuldade ajustada para ${difficulty} cartas (${adjustedPairs} pares).`);
         }
 
         // Fallback de emergência (nunca deveria chegar aqui com 80+ imagens válidas)
@@ -339,17 +361,17 @@ window.MemoryGame = (function() {
             [availableImages[i], availableImages[j]] = [availableImages[j], availableImages[i]];
         }
 
-        let selectedImages = [];
-        // Selecionar imagens únicas do pool validado para formar pares
-        for (let i = 0; i < pairsNeeded; i++) {
-            selectedImages.push(availableImages[i % availableImages.length]);
-        }
+        // ── Seleção segura: exatamente 1 imagem por par, sem reciclagem ──
+        const finalPairsNeeded = difficulty / 2;
+        let selectedImages = availableImages.slice(0, finalPairsNeeded);
+
+        console.log(`[MemoryGame] Montando tabuleiro: ${selectedImages.length} imagens únicas → ${selectedImages.length * 2} cartas.`);
 
         // Criar os pares e embaralhar
         let deck = [];
         selectedImages.forEach((imgUrl, index) => {
-            deck.push({ id: `pair-${index}-a`, imgUrl, isMatched: false });
-            deck.push({ id: `pair-${index}-b`, imgUrl, isMatched: false });
+            deck.push({ id: `pair-${index}-a`, imgUrl, pairId: index, isMatched: false });
+            deck.push({ id: `pair-${index}-b`, imgUrl, pairId: index, isMatched: false });
         });
 
         // Shuffle Final (Fisher-Yates) para distribuir os pares no tabuleiro
