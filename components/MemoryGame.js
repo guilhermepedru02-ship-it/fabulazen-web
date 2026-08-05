@@ -2,19 +2,19 @@
  * MemoryGame.js
  * Mini-game de Memória Mágica com opções de 1 Jogador (Zen) e 2 Jogadores (Duelo com Timer).
  */
-window.MemoryGame = (function() {
+window.MemoryGame = (function () {
     let container = null;
     let onQuitCallback = null;
     let currentEbook = null;
 
     let mode = '1p'; // '1p' ou '2p'
     let difficulty = 16; // 16, 24 ou 36 cartas
-    
+
     let cards = [];
     let flippedCards = [];
     let lockBoard = false;
     let matchesFound = 0;
-    
+
     // Multiplayer state
     let turn = 1; // 1 ou 2
     let scores = { 1: 0, 2: 0 };
@@ -29,10 +29,10 @@ window.MemoryGame = (function() {
     function iniciar(ebookOrBooks, onQuit) {
         currentEbook = ebookOrBooks;
         onQuitCallback = onQuit;
-        
+
         const appRoot = document.getElementById('app-root');
         appRoot.innerHTML = '';
-        
+
         container = document.createElement('div');
         container.className = 'memory-container';
         appRoot.appendChild(container);
@@ -164,7 +164,7 @@ window.MemoryGame = (function() {
         if (imagePath.startsWith('data:')) return imagePath;
 
         const STORAGE_BASE_URL = "https://auhamseeqdpoatwnyxwl.supabase.co/storage/v1/object/public/fabula-assets/";
-        
+
         let finalFileName = imagePath;
 
         // Detecta URLs de domínios legados ou externos e extrai apenas o nome do arquivo
@@ -181,7 +181,7 @@ window.MemoryGame = (function() {
             if (imagePath.includes('supabase.co')) return imagePath;
 
             const isExternalLegacy = legacyDomains.some(domain => imagePath.includes(domain));
-            
+
             if (isExternalLegacy) {
                 // Extrai o nome do arquivo da URL e limpa query strings
                 finalFileName = imagePath.split('/').pop().split('?')[0];
@@ -198,14 +198,14 @@ window.MemoryGame = (function() {
         // Se for apenas o nome do arquivo, tenta inferir a pasta física REAL
         if (ebook) {
             let folder = (ebook.id || "").replace('_ebook', '');
-            
+
             // Tenta extrair a pasta real de capaUrl ou arquivoUrl (mais confiável que o ID)
             const referencePath = ebook.capaUrl || ebook.coverImage || ebook.arquivoUrl;
             if (referencePath && referencePath.includes('ebooks/')) {
                 const afterEbooks = referencePath.split('ebooks/')[1];
                 folder = afterEbooks.split('/')[0];
             }
-            
+
             if (folder) {
                 // Injetamos a pasta no dataset para o Smart Retry usar em caso de erro
                 return `${STORAGE_BASE_URL}assets/ebooks/${folder}/${finalFileName}`;
@@ -225,7 +225,7 @@ window.MemoryGame = (function() {
 
             if (ebook.capaUrl) rawUrls.push(resolveUrl(ebook.capaUrl, ebook));
             if (ebook.coverImage) rawUrls.push(resolveUrl(ebook.coverImage, ebook));
-            
+
             if (ebook.storyPages) {
                 ebook.storyPages.forEach((page, idx) => {
                     if (page.image) {
@@ -300,7 +300,7 @@ window.MemoryGame = (function() {
     async function buildCards() {
         const pairsNeeded = difficulty / 2;
         const pool = Array.isArray(currentEbook) ? currentEbook : [currentEbook];
-        
+
         // Usa cache se disponível e suficiente, senão revalida
         let availableImages = _validatedImageCache.length >= pairsNeeded
             ? [..._validatedImageCache]
@@ -332,10 +332,10 @@ window.MemoryGame = (function() {
 
             console.log(`[MemoryGame] Validando até ${candidatesToValidate.length} imagens candidatas para ${pairsNeeded} pares...`);
             let validated = await validateImages(candidatesToValidate, pairsNeeded + 4);
-            
+
             // Remove possíveis duplicatas no array de validação
             validated = [...new Set(validated)];
-            
+
             console.log(`[MemoryGame] ${validated.length} imagens únicas validadas com sucesso (precisa de ${pairsNeeded}).`);
             availableImages = validated;
 
@@ -450,7 +450,7 @@ window.MemoryGame = (function() {
 
     function checkForMatch() {
         lockBoard = true;
-        
+
         const card1 = flippedCards[0];
         const card2 = flippedCards[1];
         const isMatch = card1.cardEl.dataset.url === card2.cardEl.dataset.url;
@@ -465,12 +465,12 @@ window.MemoryGame = (function() {
     function disableCards() {
         flippedCards[0].cardEl.classList.add('matched');
         flippedCards[1].cardEl.classList.add('matched');
-        
+
         cards[flippedCards[0].index].isMatched = true;
         cards[flippedCards[1].index].isMatched = true;
 
         matchesFound++;
-        
+
         if (mode === '2p') {
             scores[turn]++;
             updateScores();
@@ -488,11 +488,11 @@ window.MemoryGame = (function() {
         setTimeout(() => {
             flippedCards[0].cardEl.classList.remove('flipped');
             flippedCards[1].cardEl.classList.remove('flipped');
-            
+
             if (mode === '2p') {
                 switchTurn();
             }
-            
+
             resetBoardState();
         }, 1000); // 1 segundo para ver as cartas
     }
@@ -513,15 +513,15 @@ window.MemoryGame = (function() {
         clearInterval(timerInterval);
         timeLeft = TURN_TIME;
         const timerBar = document.getElementById('timer-bar');
-        
+
         if (timerBar) {
             // Remove a transição para pular para 100% imediatamente
             timerBar.style.transition = 'none';
             timerBar.style.transform = 'scaleX(1)';
-            
+
             // Força o reflow
             void timerBar.offsetWidth;
-            
+
             // Reativa a transição
             timerBar.style.transition = 'transform 0.1s linear';
         }
@@ -535,13 +535,13 @@ window.MemoryGame = (function() {
 
             if (timeLeft <= 0) {
                 clearInterval(timerInterval);
-                
+
                 // Se o tempo acabar enquanto o jogador virou 1 carta, desvira ela
                 if (flippedCards.length === 1) {
                     flippedCards[0].cardEl.classList.remove('flipped');
                     resetBoardState();
                 }
-                
+
                 switchTurn();
             }
         }, 100);
@@ -550,7 +550,7 @@ window.MemoryGame = (function() {
     function updateScores() {
         const p1 = document.getElementById('score-p1');
         const p2 = document.getElementById('score-p2');
-        
+
         if (p1 && p2) {
             p1.innerText = `J1: ${scores[1]}`;
             p2.innerText = `J2: ${scores[2]}`;
@@ -578,7 +578,7 @@ window.MemoryGame = (function() {
         if (mode === '1p') {
             xpGained = difficulty * 2; // Ex: 16 -> 32 XP, 24 -> 48 XP
             message = `<h2>Concluído!</h2><p>Você encontrou todos os pares e ganhou +${xpGained} XP!</p>`;
-            
+
             // Integração com Gamification
             if (window.GamificationEngine && typeof window.GamificationEngine.ganharXP === 'function') {
                 window.GamificationEngine.ganharXP(xpGained, 'memory_win');
