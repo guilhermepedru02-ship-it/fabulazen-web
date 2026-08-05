@@ -176,20 +176,21 @@ export const Reader = (book, onBack, onQuizRequest, initialPage = 0, onPageChang
                 .image-side {
                     width: 100% !important;
                     height: auto !important;
-                    aspect-ratio: 1 / 1 !important;
-                    max-height: 42vh !important;
-                    display: flex !important;
-                    align-items: center !important;
-                    justify-content: center !important;
-                    background: #faf9f6 !important;
+                    display: block !important;
+                    background: transparent !important;
+                    margin-bottom: 20px !important;
                 }
                 .image-side video,
                 .image-side img,
                 .book-media,
                 #pageImage {
                     width: 100% !important;
-                    height: 100% !important;
-                    object-fit: contain !important;
+                    height: auto !important;
+                    max-height: 65vh !important;
+                    object-fit: cover !important;
+                    display: block !important;
+                    border-radius: 10px !important;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
                 }
             }
             </style>`;
