@@ -242,37 +242,190 @@ export function GamesHub(books, onNavigate, onStartGame) {
 
     // --- Componente Reutilizável de Grade de Seleção de Ebooks ---
     const _renderizarSelecaoLivro = (disponiveis, bloqueados, titulo, subTitulo, onEbookSelected) => {
-        container.innerHTML = `
-          <div class="fz-games-selecao fade-in">
-            <div class="fz-games-selecao-header">
-              <button class="fz-games-selecao-voltar" id="fz-selecao-voltar" aria-label="Voltar para Games">←</button>
-              <div>
-                <h2 class="fz-games-selecao-titulo">${titulo}</h2>
-                <p class="fz-games-selecao-sub">${subTitulo}</p>
-              </div>
-            </div>
-            
-            <div class="fz-games-livros-grid" style="margin-top: 2rem;">
-              ${disponiveis.map(ebook => `
-                <div class="fz-games-livro-card" data-id="${ebook.id}" tabindex="0">
-                  <img src="${ebook.capaUrl || ebook.coverImage}" alt="Capa: ${ebook.titulo}" loading="lazy"/>
-                  <div class="card-content">
-                      <span class="fz-games-livro-titulo">${ebook.titulo}</span>
-                  </div>
-                </div>
-              `).join('')}
+        const gameTheme = titulo.includes('Quiz') 
+            ? { color: '#7c3aed', glow: 'rgba(124,58,237,0.4)', emoji: '🧠', tag: 'Memória & Quiz', gradient: 'linear-gradient(135deg, #1a0533 0%, #2d1b69 50%, #0f0f1a 100%)' }
+            : { color: '#059669', glow: 'rgba(5,150,105,0.4)', emoji: '📖', tag: 'Sequência & Lógica', gradient: 'linear-gradient(135deg, #012a1a 0%, #064e3b 50%, #0f0f1a 100%)' };
 
-              ${bloqueados.map(ebook => `
-                <div class="fz-games-livro-card bloqueado" title="Jogo em breve">
-                  <img src="${ebook.capaUrl || ebook.coverImage}" alt="Capa: ${ebook.titulo}" loading="lazy"/>
-                  <div class="fz-games-livro-cadeado">🔒</div>
-                  <div class="card-content">
-                      <span class="fz-games-livro-titulo">${ebook.titulo}</span>
-                      <span class="fz-games-livro-breve">Restrito</span>
-                  </div>
-                </div>
-              `).join('')}
+        container.innerHTML = `
+          <div class="fz-games-selecao fade-in" style="
+            min-height: 100vh;
+            background: ${gameTheme.gradient};
+            padding: 0 0 40px 0;
+            font-family: 'Nunito', sans-serif;
+          ">
+            <!-- HERO BANNER -->
+            <div style="
+              position: relative;
+              padding: 32px 24px 28px;
+              text-align: center;
+              border-bottom: 1px solid rgba(255,255,255,0.08);
+              background: rgba(0,0,0,0.3);
+              backdrop-filter: blur(10px);
+            ">
+              <button id="fz-selecao-voltar" aria-label="Voltar para Games" style="
+                position: absolute;
+                top: 24px; left: 20px;
+                background: rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.2);
+                color: #fff;
+                width: 40px; height: 40px;
+                border-radius: 50%;
+                font-size: 1.2rem;
+                cursor: pointer;
+                display: flex; align-items: center; justify-content: center;
+                transition: all 0.2s;
+              ">←</button>
+
+              <div style="
+                display: inline-block;
+                background: rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.2);
+                border-radius: 999px;
+                padding: 4px 16px;
+                font-size: 0.75rem;
+                color: rgba(255,255,255,0.7);
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                margin-bottom: 12px;
+              ">${gameTheme.emoji} ${gameTheme.tag}</div>
+
+              <h2 style="
+                font-family: 'Cinzel', serif;
+                font-size: clamp(1.6rem, 5vw, 2.4rem);
+                color: #fff;
+                margin: 0 0 8px 0;
+                text-shadow: 0 0 30px ${gameTheme.glow};
+              ">${titulo}</h2>
+              <p style="
+                color: rgba(255,255,255,0.6);
+                font-size: 0.95rem;
+                margin: 0;
+              ">${subTitulo}</p>
+
+              <!-- XP Badge -->
+              <div style="
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: 16px;
+                background: ${gameTheme.color};
+                border-radius: 999px;
+                padding: 6px 18px;
+                font-size: 0.85rem;
+                color: #fff;
+                font-weight: 700;
+                box-shadow: 0 4px 15px ${gameTheme.glow};
+              ">⚡ Ganhe XP ao completar</div>
             </div>
+
+            <!-- AVAILABLE BOOKS -->
+            ${disponiveis.length > 0 ? `
+            <div style="padding: 28px 20px 0;">
+              <p style="
+                color: rgba(255,255,255,0.5);
+                font-size: 0.7rem;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                margin-bottom: 16px;
+              ">▼ Prontos para jogar</p>
+              <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+                gap: 16px;
+              ">
+                ${disponiveis.map(ebook => `
+                  <div class="fz-games-livro-card" data-id="${ebook.id}" tabindex="0" style="
+                    position: relative;
+                    border-radius: 12px;
+                    overflow: hidden;
+                    cursor: pointer;
+                    border: 2px solid rgba(255,255,255,0.1);
+                    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+                    background: #000;
+                  " onmouseover="this.style.transform='translateY(-6px) scale(1.03)';this.style.boxShadow='0 16px 40px ${gameTheme.glow}';this.style.borderColor='${gameTheme.color}'"
+                     onmouseout="this.style.transform='';this.style.boxShadow='';this.style.borderColor='rgba(255,255,255,0.1)'">
+                    <img src="${ebook.capaUrl || ebook.coverImage}" alt="${ebook.titulo}" loading="lazy" style="
+                      width: 100%;
+                      aspect-ratio: 3/4;
+                      object-fit: cover;
+                      display: block;
+                      opacity: 0.9;
+                    "/>
+                    <!-- Play overlay on hover -->
+                    <div style="
+                      position: absolute; inset: 0;
+                      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 50%);
+                      display: flex; flex-direction: column;
+                      justify-content: flex-end;
+                      padding: 10px;
+                    ">
+                      <span style="
+                        color: #fff;
+                        font-size: 0.78rem;
+                        font-weight: 700;
+                        line-height: 1.3;
+                        text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+                      ">${ebook.titulo}</span>
+                      <div style="
+                        margin-top: 6px;
+                        background: ${gameTheme.color};
+                        color: #fff;
+                        font-size: 0.65rem;
+                        font-weight: 800;
+                        letter-spacing: 1px;
+                        text-transform: uppercase;
+                        padding: 3px 8px;
+                        border-radius: 4px;
+                        display: inline-block;
+                        width: fit-content;
+                      ">▶ Jogar</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>` : ''}
+
+            <!-- LOCKED BOOKS -->
+            ${bloqueados.length > 0 ? `
+            <div style="padding: 28px 20px 0;">
+              <p style="
+                color: rgba(255,255,255,0.3);
+                font-size: 0.7rem;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                margin-bottom: 16px;
+              ">🔒 Indisponíveis para este jogo</p>
+              <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+                gap: 12px;
+                opacity: 0.45;
+              ">
+                ${bloqueados.map(ebook => `
+                  <div class="fz-games-livro-card bloqueado" title="Jogo indisponível para este livro" style="
+                    position: relative;
+                    border-radius: 10px;
+                    overflow: hidden;
+                    border: 1px solid rgba(255,255,255,0.08);
+                    filter: grayscale(60%);
+                    cursor: not-allowed;
+                  ">
+                    <img src="${ebook.capaUrl || ebook.coverImage}" alt="${ebook.titulo}" loading="lazy" style="
+                      width: 100%; aspect-ratio: 3/4; object-fit: cover; display: block;
+                    "/>
+                    <div style="
+                      position: absolute; inset: 0;
+                      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 50%);
+                      display: flex; flex-direction: column; justify-content: flex-end; padding: 8px;
+                    ">
+                      <div style="font-size: 1.2rem; text-align:center; margin-bottom: 4px;">🔒</div>
+                      <span style="color: rgba(255,255,255,0.7); font-size: 0.7rem; line-height: 1.2;">${ebook.titulo}</span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>` : ''}
+
           </div>`;
 
         // Voltar para Mundo dos Games
