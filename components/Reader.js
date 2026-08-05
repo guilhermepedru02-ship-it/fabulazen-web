@@ -193,42 +193,6 @@ export const Reader = (book, onBack, onQuizRequest, initialPage = 0, onPageChang
                     border-radius: 10px !important;
                     box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
                 }
-
-                /* ── Fabula RPG: layout de duas colunas → coluna única vertical ── */
-                .book-frame {
-                    flex-direction: column !important;
-                    height: auto !important;
-                    width: 100% !important;
-                    border-radius: 0 !important;
-                    box-shadow: none !important;
-                    border: none !important;
-                    overflow: visible !important;
-                }
-                .side-image {
-                    flex: none !important;
-                    width: 100% !important;
-                    height: auto !important;
-                    aspect-ratio: 4 / 3 !important;
-                    max-height: 55vw !important;
-                    overflow: hidden !important;
-                    border-radius: 10px 10px 0 0 !important;
-                }
-                .side-image img,
-                .side-image video {
-                    width: 100% !important;
-                    height: 100% !important;
-                    object-fit: cover !important;
-                    object-position: center 25% !important;
-                    position: absolute !important;
-                    top: 0 !important;
-                    left: 0 !important;
-                }
-                .side-content {
-                    flex: none !important;
-                    width: 100% !important;
-                    padding: 20px 18px !important;
-                    box-sizing: border-box !important;
-                }
             }
             </style>`;
 
