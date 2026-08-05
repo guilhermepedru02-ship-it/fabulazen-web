@@ -170,11 +170,36 @@ export const Reader = (book, onBack, onQuizRequest, initialPage = 0, onPageChang
             });
             </script>`;
 
-            // Injeta o <base> e o nosso Chunk Loader no <head> de TODOS os ebooks automaticamente
+            const smartMobileFramingStyle = `
+            <style id="fz-smart-video-framing">
+            @media (max-width: 600px) {
+                .image-side {
+                    width: 100% !important;
+                    height: auto !important;
+                    aspect-ratio: 1 / 1 !important;
+                    max-height: 42vh !important;
+                    display: flex !important;
+                    align-items: center !important;
+                    justify-content: center !important;
+                    background: #faf9f6 !important;
+                }
+                .image-side video,
+                .image-side img,
+                .book-media,
+                #pageImage {
+                    width: 100% !important;
+                    height: 100% !important;
+                    object-fit: contain !important;
+                }
+            }
+            </style>`;
+
+            // Injeta o <base>, Chunk Loader e Enquadramento Inteligente Mobile no <head> de TODOS os ebooks automaticamente
+            const injectedHead = `${videoChunkLoaderScript}\n${smartMobileFramingStyle}`;
             if (!finalHtml.includes('<base ')) {
-                finalHtml = finalHtml.replace('<head>', `<head>\n    <base href="${baseUrl}">${videoChunkLoaderScript}`);
+                finalHtml = finalHtml.replace('<head>', `<head>\n    <base href="${baseUrl}">${injectedHead}`);
             } else {
-                finalHtml = finalHtml.replace('<head>', `<head>${videoChunkLoaderScript}`);
+                finalHtml = finalHtml.replace('<head>', `<head>${injectedHead}`);
             }
             
             // Ao terminar de carregar o srcdoc, o iframe dispara o 'load' event.

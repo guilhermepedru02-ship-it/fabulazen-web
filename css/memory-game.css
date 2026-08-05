@@ -206,32 +206,32 @@
    ========================================================================== */
 .memory-grid {
     display: grid;
-    gap: 15px;
+    gap: 12px;
     justify-content: center;
     perspective: 1000px;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
-/* Grid sizes set by JS based on difficulty, but we give a default */
-.memory-grid.grid-16 { grid-template-columns: repeat(4, 1fr); }
-.memory-grid.grid-24 { grid-template-columns: repeat(6, 1fr); }
-.memory-grid.grid-36 { grid-template-columns: repeat(6, 1fr); }
+/* Grid sizes set by JS based on difficulty */
+.memory-grid.grid-16 { grid-template-columns: repeat(4, 1fr); max-width: 520px; }
+.memory-grid.grid-24 { grid-template-columns: repeat(6, 1fr); max-width: 780px; }
+.memory-grid.grid-36 { grid-template-columns: repeat(6, 1fr); max-width: 780px; }
 
 .memory-card {
-    width: 100px;
-    height: 100px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
     position: relative;
     cursor: pointer;
     transform-style: preserve-3d;
     transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
-}
-
-@media (min-width: 768px) {
-    .memory-card {
-        width: 120px;
-        height: 120px;
-    }
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
 .memory-card.flipped {
@@ -264,7 +264,7 @@
         repeating-linear-gradient(45deg, rgba(0,0,0,0.1) 0, rgba(0,0,0,0.1) 2px, transparent 2px, transparent 4px),
         radial-gradient(circle at center, #4a1f1f 0%, #1a0a0a 100%);
     color: #d4af37;
-    font-size: 2.5rem;
+    font-size: clamp(1.2rem, 4vw, 2.5rem);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -292,7 +292,7 @@
 
 .card-front.img-error::after {
     content: '✨';
-    font-size: 2.5rem;
+    font-size: clamp(1.2rem, 4vw, 2.5rem);
     color: #d4af37;
     filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
     animation: pulse-zen 2s infinite ease-in-out;
@@ -307,24 +307,33 @@
    Responsive
    ========================================================================== */
 @media (max-width: 600px) {
+    .memory-container {
+        padding: 10px;
+    }
+
+    .memory-grid {
+        gap: 8px;
+    }
+
     .memory-grid.grid-16 { grid-template-columns: repeat(4, 1fr); }
     .memory-grid.grid-24 { grid-template-columns: repeat(4, 1fr); }
-    .memory-grid.grid-36 { grid-template-columns: repeat(6, 1fr); }
-    
-    .memory-card {
-        width: 75px;
-        height: 75px;
-    }
+    .memory-grid.grid-36 { grid-template-columns: repeat(4, 1fr); }
+
     .memory-setup {
-        padding: 20px;
+        padding: 20px 15px;
+        width: 100%;
+        box-sizing: border-box;
     }
+
     .player-stats {
         flex-direction: column;
         gap: 5px;
     }
+
     .timer-container {
         margin: 10px 0;
     }
+
     .memory-header {
         flex-direction: column;
         gap: 10px;

@@ -261,13 +261,27 @@ window.MemoryGame = (function() {
 
     /**
      * Valida um lote de URLs retornando apenas as que carregam com sucesso.
-     * Processa em paralelo com concorrência controlada.
+     * Processa em lotes com concorrência controlada e parada antecipada
+     * para otimizar conexões em dispositivos móveis.
      */
-    async function validateImages(urls) {
-        const results = await Promise.allSettled(urls.map(url => preloadImage(url)));
-        return results
-            .filter(r => r.status === 'fulfilled')
-            .map(r => r.value);
+    async function validateImages(urls, targetCount = Infinity) {
+        const validated = [];
+        const BATCH_SIZE = 8;
+
+        for (let i = 0; i < urls.length; i += BATCH_SIZE) {
+            if (validated.length >= targetCount) break;
+
+            const batch = urls.slice(i, i + BATCH_SIZE);
+            const results = await Promise.allSettled(batch.map(url => preloadImage(url)));
+
+            for (const r of results) {
+                if (r.status === 'fulfilled' && !validated.includes(r.value)) {
+                    validated.push(r.value);
+                }
+            }
+        }
+
+        return validated;
     }
 
     // Cache de imagens já validadas para evitar re-validação entre partidas
@@ -312,12 +326,12 @@ window.MemoryGame = (function() {
                 [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
             }
 
-            // Valida uma fatia generosa para garantir cobertura no modo difícil (36 peças)
+            // Valida em lotes rápidos até obter imagens suficientes para cobrir o tabuleiro
             const sliceSize = Math.min(candidates.length, Math.max(pairsNeeded * 5, 80));
             let candidatesToValidate = candidates.slice(0, sliceSize);
 
-            console.log(`[MemoryGame] Validando ${candidatesToValidate.length} imagens candidatas para ${pairsNeeded} pares...`);
-            let validated = await validateImages(candidatesToValidate);
+            console.log(`[MemoryGame] Validando até ${candidatesToValidate.length} imagens candidatas para ${pairsNeeded} pares...`);
+            let validated = await validateImages(candidatesToValidate, pairsNeeded + 4);
             
             // Remove possíveis duplicatas no array de validação
             validated = [...new Set(validated)];
