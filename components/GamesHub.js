@@ -242,9 +242,309 @@ export function GamesHub(books, onNavigate, onStartGame) {
 
     // --- Componente Reutilizável de Grade de Seleção de Ebooks ---
     const _renderizarSelecaoLivro = (disponiveis, bloqueados, titulo, subTitulo, onEbookSelected) => {
-        const gameTheme = titulo.includes('Quiz') 
-            ? { color: '#7c3aed', glow: 'rgba(124,58,237,0.4)', emoji: '🧠', tag: 'Memória & Quiz', gradient: 'linear-gradient(135deg, #1a0533 0%, #2d1b69 50%, #0f0f1a 100%)' }
-            : { color: '#059669', glow: 'rgba(5,150,105,0.4)', emoji: '📖', tag: 'Sequência & Lógica', gradient: 'linear-gradient(135deg, #012a1a 0%, #064e3b 50%, #0f0f1a 100%)' };
+        const isQuiz = titulo.includes('Quiz');
+        const gameEmoji  = isQuiz ? '🧠' : '📖';
+        const gameTag    = isQuiz ? 'Memória & Quiz' : 'Sequência & Lógica';
+        const gameColor  = isQuiz ? '#7c3aed' : '#059669';
+        const gameColorL = isQuiz ? '#a78bfa' : '#34d399';
+        const xpText     = isQuiz ? '+30 XP' : '+35 XP';
+
+        container.innerHTML = `
+          <style>
+            @keyframes fz-float-leaf {
+              0%   { transform: translateY(0)   rotate(0deg)   scale(1);    opacity: 0; }
+              10%  { opacity: 0.6; }
+              90%  { opacity: 0.4; }
+              100% { transform: translateY(-110vh) rotate(360deg) scale(0.7); opacity: 0; }
+            }
+            @keyframes fz-pulse-gold {
+              0%, 100% { box-shadow: 0 0 0 0 rgba(212,175,55,0); }
+              50%       { box-shadow: 0 0 20px 4px rgba(212,175,55,0.35); }
+            }
+            @keyframes fz-shimmer {
+              0%   { background-position: -200% 0; }
+              100% { background-position:  200% 0; }
+            }
+            .fz-sel-card {
+              position: relative;
+              border-radius: 14px;
+              overflow: hidden;
+              cursor: pointer;
+              background: #fff;
+              border: 2px solid rgba(212,175,55,0.25);
+              box-shadow: 0 4px 16px rgba(90,60,10,0.10);
+              transition: transform 0.28s cubic-bezier(.23,1,.32,1),
+                          box-shadow 0.28s ease,
+                          border-color 0.28s ease;
+            }
+            .fz-sel-card:hover {
+              transform: translateY(-8px) scale(1.03);
+              box-shadow: 0 18px 40px rgba(212,175,55,0.35), 0 4px 16px rgba(90,60,10,0.12);
+              border-color: #D4AF37;
+            }
+            .fz-sel-card:hover .fz-sel-play-btn { opacity: 1; transform: translateY(0); }
+            .fz-sel-play-btn {
+              opacity: 0;
+              transform: translateY(6px);
+              transition: opacity 0.22s, transform 0.22s;
+              background: #D4AF37;
+              color: #1a1000;
+              font-family: 'Nunito', sans-serif;
+              font-weight: 900;
+              font-size: 0.68rem;
+              letter-spacing: 1.5px;
+              text-transform: uppercase;
+              padding: 4px 10px;
+              border-radius: 6px;
+              display: inline-block;
+              margin-top: 5px;
+            }
+            .fz-sel-locked {
+              filter: grayscale(70%);
+              cursor: not-allowed;
+              opacity: 0.55;
+              border-style: dashed;
+            }
+            .fz-sel-locked:hover {
+              transform: none !important;
+              box-shadow: none !important;
+              border-color: rgba(212,175,55,0.2) !important;
+            }
+            .fz-sel-back-btn:hover { background: rgba(212,175,55,0.2) !important; }
+          </style>
+
+          <div style="
+            position: absolute;
+            inset: 0;
+            min-height: 100%;
+            background: linear-gradient(160deg, #FDFCF0 0%, #FFF8DC 40%, #F5F0D0 100%);
+            font-family: 'Nunito', sans-serif;
+            overflow-y: auto;
+            overflow-x: hidden;
+          ">
+
+            <!-- PARTÍCULAS FLUTUANTES (folhas + estrelas) -->
+            <div aria-hidden="true" style="position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;">
+              ${['🍃','✨','🌿','⭐','🍀','✦','🌸','🌟'].map((el,i) => `
+                <span style="
+                  position: absolute;
+                  bottom: -40px;
+                  left: ${8 + i * 12}%;
+                  font-size: ${0.8 + (i % 3) * 0.4}rem;
+                  animation: fz-float-leaf ${7 + i * 1.3}s ease-in-out ${i * 0.9}s infinite;
+                  filter: opacity(0.55);
+                ">${el}</span>
+              `).join('')}
+            </div>
+
+            <!-- HEADER (mesmo estilo do app-header) -->
+            <div style="
+              position: sticky;
+              top: 0;
+              z-index: 20;
+              background: #000;
+              border-bottom: 2px solid #FFD700;
+              box-shadow: 0 4px 20px rgba(255,215,0,0.25);
+              display: flex;
+              align-items: center;
+              gap: 14px;
+              padding: 0 20px;
+              height: 56px;
+            ">
+              <button id="fz-selecao-voltar" class="fz-sel-back-btn" aria-label="Voltar para Games" style="
+                background: rgba(255,215,0,0.1);
+                border: 1px solid rgba(255,215,0,0.3);
+                color: #FFD700;
+                width: 36px; height: 36px;
+                border-radius: 50%;
+                font-size: 1.1rem;
+                cursor: pointer;
+                display: flex; align-items: center; justify-content: center;
+                transition: background 0.2s;
+                flex-shrink: 0;
+              ">←</button>
+
+              <span style="
+                font-family: 'Cinzel', 'Playfair Display', serif;
+                color: #FFD700;
+                font-size: 1rem;
+                font-weight: 700;
+                letter-spacing: 1px;
+                text-shadow: 0 0 12px rgba(255,215,0,0.5);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              ">${gameEmoji} ${titulo}</span>
+
+              <div style="
+                margin-left: auto;
+                background: ${gameColor};
+                color: #fff;
+                font-size: 0.7rem;
+                font-weight: 800;
+                padding: 4px 12px;
+                border-radius: 999px;
+                white-space: nowrap;
+                flex-shrink: 0;
+              ">${xpText} por jogar</div>
+            </div>
+
+            <!-- HERO -->
+            <div style="
+              position: relative;
+              z-index: 1;
+              text-align: center;
+              padding: 36px 24px 24px;
+              border-bottom: 1px solid rgba(212,175,55,0.2);
+            ">
+              <!-- Tag do jogo -->
+              <div style="
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                background: rgba(212,175,55,0.12);
+                border: 1px solid rgba(212,175,55,0.35);
+                border-radius: 999px;
+                padding: 5px 18px;
+                font-size: 0.72rem;
+                color: #8b6914;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                font-weight: 800;
+                margin-bottom: 14px;
+              ">${gameEmoji} ${gameTag}</div>
+
+              <h2 style="
+                font-family: 'Playfair Display', 'Cinzel', serif;
+                font-size: clamp(1.8rem, 5vw, 2.8rem);
+                color: #1a1000;
+                margin: 0 0 10px 0;
+                line-height: 1.15;
+              ">${titulo}</h2>
+
+              <p style="
+                color: #6b5f4a;
+                font-size: 0.95rem;
+                margin: 0 auto;
+                max-width: 420px;
+              ">${subTitulo}</p>
+
+              <!-- Divisor decorativo dourado -->
+              <div style="
+                margin: 20px auto 0;
+                width: 60px;
+                height: 2px;
+                background: linear-gradient(90deg, transparent, #D4AF37, transparent);
+                border-radius: 2px;
+              "></div>
+            </div>
+
+            <!-- GRID DE LIVROS DISPONÍVEIS -->
+            ${disponiveis.length > 0 ? `
+            <div style="position:relative;z-index:1;padding:28px 20px 8px;">
+              <p style="
+                color: #8b6914;
+                font-size: 0.68rem;
+                font-weight: 800;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                margin: 0 0 18px 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+              "><span style="flex:1;height:1px;background:linear-gradient(90deg,rgba(212,175,55,0.5),transparent)"></span>
+               Prontos para jogar
+               <span style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.5))"></span></p>
+
+              <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+                gap: 18px;
+              ">
+                ${disponiveis.map(ebook => `
+                  <div class="fz-sel-card fz-games-livro-card" data-id="${ebook.id}" tabindex="0"
+                       role="button" aria-label="Jogar com ${ebook.titulo}">
+                    <img src="${ebook.capaUrl || ebook.coverImage}" alt="${ebook.titulo}"
+                         loading="lazy" style="
+                      width: 100%;
+                      aspect-ratio: 3/4;
+                      object-fit: cover;
+                      display: block;
+                    "/>
+                    <!-- overlay gradiente -->
+                    <div style="
+                      position: absolute;
+                      inset: 0;
+                      background: linear-gradient(to top,
+                        rgba(20,12,0,0.88) 0%,
+                        rgba(20,12,0,0.2) 55%,
+                        transparent 100%);
+                      display: flex;
+                      flex-direction: column;
+                      justify-content: flex-end;
+                      padding: 12px 10px;
+                    ">
+                      <span style="
+                        color: #fff;
+                        font-size: 0.8rem;
+                        font-weight: 700;
+                        line-height: 1.3;
+                        text-shadow: 0 1px 6px rgba(0,0,0,0.9);
+                        display: -webkit-box;
+                        -webkit-line-clamp: 2;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                      ">${ebook.titulo}</span>
+                      <div class="fz-sel-play-btn">▶ JOGAR</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>` : ''}
+
+            <!-- GRID DE LIVROS BLOQUEADOS -->
+            ${bloqueados.length > 0 ? `
+            <div style="position:relative;z-index:1;padding:20px 20px 40px;">
+              <p style="
+                color: #b0a080;
+                font-size: 0.68rem;
+                font-weight: 800;
+                letter-spacing: 3px;
+                text-transform: uppercase;
+                margin: 0 0 14px 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+              "><span style="flex:1;height:1px;background:rgba(176,160,128,0.3)"></span>
+               🔒 Indisponíveis para este jogo
+               <span style="flex:1;height:1px;background:rgba(176,160,128,0.3)"></span></p>
+
+              <div style="
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 12px;
+              ">
+                ${bloqueados.map(ebook => `
+                  <div class="fz-sel-card fz-sel-locked fz-games-livro-card bloqueado"
+                       title="${ebook.titulo} — não disponível para este jogo">
+                    <img src="${ebook.capaUrl || ebook.coverImage}" alt="${ebook.titulo}"
+                         loading="lazy" style="width:100%;aspect-ratio:3/4;object-fit:cover;display:block;"/>
+                    <div style="
+                      position: absolute; inset: 0;
+                      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 55%);
+                      display: flex; flex-direction: column;
+                      justify-content: flex-end; padding: 10px;
+                      align-items: center;
+                    ">
+                      <div style="font-size:1.4rem;margin-bottom:4px;">🔒</div>
+                      <span style="color:rgba(255,255,255,0.75);font-size:0.72rem;text-align:center;line-height:1.3;">${ebook.titulo}</span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>` : ''}
+
+          </div>`;
 
         container.innerHTML = `
           <div class="fz-games-selecao fade-in" style="
