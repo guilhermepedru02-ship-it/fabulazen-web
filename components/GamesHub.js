@@ -329,21 +329,31 @@ export function GamesHub(books, onNavigate, onStartGame) {
                 opacity: 1 !important;
                 transform: translateY(0) !important;
               }
-              .fz-sel-grid {
-                grid-template-columns: repeat(2, 1fr);
+              .fz-sel-grid, .fz-sel-grid-locked {
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 24px;
                 gap: 16px;
-                padding: 0 10px;
+                /* Esconde a barra de rolagem mas mantém a funcionalidade */
+                scrollbar-width: none;
               }
-              .fz-sel-grid-locked {
-                grid-template-columns: repeat(3, 1fr);
+              .fz-sel-grid::-webkit-scrollbar, .fz-sel-grid-locked::-webkit-scrollbar {
+                display: none;
               }
-              .fz-sel-card {
+              .fz-sel-grid > .fz-sel-card {
+                flex: 0 0 75%;
+                max-width: 260px;
+                scroll-snap-align: center;
+                border-radius: 12px;
+              }
+              .fz-sel-grid-locked > .fz-sel-card {
+                flex: 0 0 45%;
+                max-width: 150px;
+                scroll-snap-align: center;
                 border-radius: 10px;
-              }
-            }
-            @media (max-width: 380px) {
-              .fz-sel-grid-locked {
-                grid-template-columns: repeat(2, 1fr);
               }
             }
           </style>
