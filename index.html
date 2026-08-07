@@ -65,6 +65,21 @@
             color: #222222 !important;
         }
     </style>
+    <!-- ⚙️ CONFIG DE PRODUCÃO (substituir env vars na Vercel) -->
+    <meta name="fz-n8n-webhook" content="__N8N_WEBHOOK_BASE_URL__">
+    <script>
+        // Lê a URL do N8N do atributo meta. Se ainda for placeholder (modo dev ou não configurado),
+        // usa o fallback local. Na Vercel, configurar a env var N8N_WEBHOOK_BASE_URL.
+        window.FabulaZenConfig = (function() {
+            var meta = document.querySelector('meta[name="fz-n8n-webhook"]');
+            var value = meta ? meta.getAttribute('content') : '';
+            return {
+                N8N_WEBHOOK_URL: (value && !value.startsWith('__'))
+                    ? value
+                    : 'http://localhost:5678/webhook'
+            };
+        })();
+    </script>
 </head>
 
 <body>

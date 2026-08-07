@@ -183,12 +183,15 @@ export const PaymentPage = (orderData = null, onComplete) => {
                 }
 
                 // Faz a chamada para o webhook do n8n que cria a Checkout Session dinamicamente
-                const currentHost = window.location.hostname || 'localhost';
-                const response = await fetch(`http://${currentHost}:5678/webhook/create-checkout`, {
+                // Em produção: URL vem de window.FZ_N8N_WEBHOOK_URL (configurado via env var N8N_WEBHOOK_BASE_URL na Vercel)
+                // Em dev local: cai automaticamente para http://localhost:5678/webhook
+                const n8nWebhookUrl = (window.FZ_N8N_WEBHOOK_URL || 'http://localhost:5678/webhook');
+                const response = await fetch(`${n8nWebhookUrl}/create-checkout`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+
                 
                 const data = await response.json();
                 
