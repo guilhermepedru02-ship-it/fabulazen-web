@@ -311,6 +311,41 @@ export function GamesHub(books, onNavigate, onStartGame) {
               border-color: rgba(212,175,55,0.2) !important;
             }
             .fz-sel-back-btn:hover { background: rgba(212,175,55,0.2) !important; }
+            
+            .fz-sel-grid {
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+              gap: 20px;
+            }
+            
+            .fz-sel-grid-locked {
+              display: grid;
+              grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+              gap: 12px;
+            }
+
+            @media (max-width: 768px) {
+              .fz-sel-play-btn {
+                opacity: 1 !important;
+                transform: translateY(0) !important;
+              }
+              .fz-sel-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+                padding: 0 10px;
+              }
+              .fz-sel-grid-locked {
+                grid-template-columns: repeat(3, 1fr);
+              }
+              .fz-sel-card {
+                border-radius: 10px;
+              }
+            }
+            @media (max-width: 380px) {
+              .fz-sel-grid-locked {
+                grid-template-columns: repeat(2, 1fr);
+              }
+            }
           </style>
 
           <div style="
@@ -456,11 +491,7 @@ export function GamesHub(books, onNavigate, onStartGame) {
                Prontos para jogar
                <span style="flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.5))"></span></p>
 
-              <div style="
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
-                gap: 18px;
-              ">
+              <div class="fz-sel-grid">
                 ${disponiveis.map(ebook => `
                   <div class="fz-sel-card fz-games-livro-card" data-id="${ebook.id}" tabindex="0"
                        role="button" aria-label="Jogar com ${ebook.titulo}">
@@ -519,11 +550,7 @@ export function GamesHub(books, onNavigate, onStartGame) {
                🔒 Indisponíveis para este jogo
                <span style="flex:1;height:1px;background:rgba(176,160,128,0.3)"></span></p>
 
-              <div style="
-                display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                gap: 12px;
-              ">
+              <div class="fz-sel-grid-locked">
                 ${bloqueados.map(ebook => `
                   <div class="fz-sel-card fz-sel-locked fz-games-livro-card bloqueado"
                        title="${ebook.titulo} — não disponível para este jogo">
